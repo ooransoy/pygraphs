@@ -61,10 +61,10 @@ class Graph:
 		self.create_e(self.get_v(a), self.get_v(b))
 
 	def query_e(self, e):
-		return e in self.e() or ((e[1], e[0]) in self.e() and len(e) == 2)
+		return len(e) == 2 and (e in self.e() or (e[1], e[0]) in self.e())
 
 	def query_e_l(self, e):
-		return self.query_e((self.get_v(e[0]), self.get_v(e[1]))) and len(e) == 2
+		return len(e) == 2 and self.query_e((self.get_v(e[0]), self.get_v(e[1])))
 
 	def __repr__(self):
 		return str(self.tuple())
@@ -167,3 +167,13 @@ def wiener_u2cn(x):
 	if x&1 == 1:
 		return int(round(a + x**3/192 + x**2/8 - 7*x/128))
 	return int(round(a + 5*x**3/96))
+
+def symmetric_power(g, k):
+	res = Graph()
+	for c in comb(g.vl(), k):
+		res.create_v(c)
+	for p in comb(res.vl(), 2):
+		diff = tuple(set(p[0]).symmetric_difference(set(p[1])))
+		if g.query_e_l(diff):
+			res.create_e_l(p[0], p[1])
+	return res
